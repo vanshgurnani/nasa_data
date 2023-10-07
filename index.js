@@ -27,8 +27,13 @@ mongoose.connect(`mongodb+srv://gurnanivansh57:iz64rqtBBQss8iQ7@cluster101.nuwew
     console.error('Error connecting to MongoDB:', err);
 });
 
+// Define a route for the home route ("/")
+app.get('/', (req, res) => {
+  res.send('Welcome to the NASA API');
+});
+
 // Route to render a page for the collection_data_inventory collection
-app.get('/', async (req, res) => {
+app.get('/nakamura_1979_sm_locations', async (req, res) => {
     try {
         // Access the collection directly using mongoose.connection
         const documents = await mongoose.connection.db.collection('nakamura_1979_sm_locations').find({}, { _id: 0 }).toArray();
