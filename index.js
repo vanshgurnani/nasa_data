@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 app.get('/nakamura_1979_sm_locations', async (req, res) => {
   try {
     // Access the collection directly using mongoose.connection
-    const documents = await mongoose.connection.db.collection('nakamura_1979_sm_locations').find({}, { _id: 0 }).toArray();
+    const documents = await mongoose.connection.db.collection('nakamura_1979_sm_locations').find({}).project({ _id: 0}).toArray();
 
     // Send the extracted data for all documents as a JSON response
     res.json(documents);
@@ -48,7 +48,7 @@ app.get('/nakamura_1979_sm_locations', async (req, res) => {
 app.get('/nakamura_1983_ai_locations', async (req, res) => {
   try {
     // Access the collection directly using mongoose.connection
-    const documents = await mongoose.connection.db.collection('nakamura_1983_ai_locations').find({}, { _id: 0 }).toArray();
+    const documents = await mongoose.connection.db.collection('nakamura_1983_ai_locations').find({}).project({ _id: 0}).toArray();
 
     // Send the extracted data for all documents as a JSON response
     res.json(documents);
@@ -57,6 +57,23 @@ app.get('/nakamura_1983_ai_locations', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+
+app.get('/gagnepian_2006_catalog', async (req, res) => {
+  try {
+    const documents = await mongoose.connection.db.collection('gagnepian_2006_catalog')
+      .find({})
+      .project({ _id: 0, Lat: 1, Long: 1 })
+      .toArray();
+
+    res.json(documents);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
 
 
 
