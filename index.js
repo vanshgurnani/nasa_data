@@ -58,6 +58,19 @@ app.get('/nakamura_1983_ai_locations', async (req, res) => {
   }
 });
 
+app.get('/nakamura_1983_sm_arrivals', async (req, res) => {
+  try {
+    // Access the collection directly using mongoose.connection
+    const documents = await mongoose.connection.db.collection('nakamura_1983_sm_arrivals').find({}).project({ _id: 0}).toArray();
+
+    // Send the extracted data for all documents as a JSON response
+    res.json(documents);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 app.get('/gagnepian_2006_catalog', async (req, res) => {
   try {
@@ -72,6 +85,59 @@ app.get('/gagnepian_2006_catalog', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+
+app.get('/combinedData', async (req, res) => {
+  try {
+    const locationData = await mongoose.connection.db.collection('nakamura_1979_sm_locations').find({}).toArray();
+    const arrivalData = await mongoose.connection.db.collection('nakamura_1983_sm_arrivals').find({}).toArray();
+
+    const combinedData = [];
+
+    locationData.forEach(location => {
+      // console.log('Checking location:', location); // Add this line to see the current location being checked
+      const matchingArrival = arrivalData.find(arrival =>
+        arrival.Day === location.Day && arrival.Year === location.Year
+      );
+
+      if (matchingArrival) {
+        // console.log('Matching arrival found:', matchingArrival); // Add this line to see the matching arrival
+        // Combine data with Lat, Long, and Station
+        const combinedEntry = {
+          Lat: location.Lat,
+          Long: location.Long,
+          Station: matchingArrival.Station,
+          StationData: {
+            P_YN: matchingArrival.P_YN,
+            P_NG: matchingArrival.P_NG,
+            P_JK: matchingArrival.P_JK,
+            P_PH: matchingArrival.P_PH,
+            P_Mean: matchingArrival.P_Mean,
+            S_YN: matchingArrival.S_YN,
+            S_NG: matchingArrival.S_NG,
+            S_JK: matchingArrival.S_JK,
+            S_PH: matchingArrival.S_PH,
+            S_Mean: matchingArrival.S_Mean
+          }
+        };
+        // console.log('Combined Entry:', combinedEntry); // Add this line to see the combined entry
+        combinedData.push(combinedEntry);
+      }
+    });
+
+    // console.log('Combined Data:', combinedData); // Add this line to see the final combined data
+    res.json(combinedData);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
+
+
+
+
 
 
 
