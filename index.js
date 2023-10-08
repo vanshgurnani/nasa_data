@@ -15,16 +15,24 @@ app.set('view engine', 'ejs');
 // Connect to MongoDB
 const DB_NAME = 'NASA';
 
-mongoose.connect(`mongodb+srv://gurnanivansh57:iz64rqtBBQss8iQ7@cluster101.nuwewcc.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => {
+async function connectToMongoDB() {
+  try {
+    await mongoose.connect(
+      `mongodb+srv://gurnanivansh57:iz64rqtBBQss8iQ7@cluster101.nuwewcc.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
     console.log('Connected to MongoDB');
-  })
-  .catch((err) => {
-    console.error('Error connecting to MongoDB:', err);
-});
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
+    process.exit(1);
+  }
+}
+
+// Call the function to connect to MongoDB
+connectToMongoDB();
 
 // Define a route for the home route ("/")
 app.get('/', (req, res) => {
